@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Body Fat Predictor — Just a Tape and a Scale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tape:    #E7DCC3;
+    --tape-2:  #F3ECDA;
+    --ink:     #20261F;
+    --ink-soft:#5B6156;
+    --red:     #C1442D;
+    --green:   #35513F;
+    --line:    #C9BC9C;
+    --white:   #FBF9F2;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--tape);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    background-image:
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(32,38,31,0.06) 39px, rgba(32,38,31,0.06) 40px);
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    max-width:760px;
+    margin:0 auto;
+    padding:72px 24px 32px;
+    text-align:center;
+  }
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--red);
+    margin-bottom:18px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:clamp(38px, 6vw, 62px);
+    line-height:1.05;
+    margin:0 0 18px;
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:italic;
+    color:var(--green);
+  }
+  .sub{
+    font-size:17px;
+    color:var(--ink-soft);
+    max-width:520px;
+    margin:0 auto;
+    line-height:1.55;
+  }
+
+  /* ruler divider */
+  .ruler{
+    max-width:760px;
+    margin:40px auto 0;
+    padding:0 24px;
+  }
+  .ruler-track{
+    position:relative;
+    height:34px;
+    border-top:2px solid var(--ink);
+    border-bottom:2px solid var(--ink);
+    background:var(--tape-2);
+  }
+  .ruler-track::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 20px);
+    opacity:.5;
+  }
+
+  /* ---------- Card ---------- */
+  .wrap{ max-width:760px; margin:0 auto; padding:32px 24px 100px; }
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:2px;
+    box-shadow: 0 1px 0 var(--line), 0 18px 40px -28px rgba(32,38,31,.5);
+    padding:36px 32px;
+  }
+  .card + .card{ margin-top:22px; }
+
+  .section-label{
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--green);
+    margin:0 0 18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .section-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+
+  .sex-toggle{ display:flex; gap:10px; margin-bottom:24px; }
+  .sex-toggle button{
+    flex:1;
+    padding:14px;
+    border:1px solid var(--line);
+    background:var(--tape-2);
+    font-family:'Space Mono', monospace;
+    font-size:14px;
+    letter-spacing:.05em;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:.15s;
+  }
+  .sex-toggle button.active{
+    background:var(--green);
+    border-color:var(--green);
+    color:var(--white);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:18px 16px;
+  }
+  @media (max-width:560px){ .grid{ grid-template-columns:repeat(2, 1fr); } }
+
+  .field label{
+    display:block;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .field label .unit{
+    font-family:'Space Mono', monospace;
+    color:var(--red);
+    font-size:11px;
+  }
+  .field input{
+    width:100%;
+    padding:11px 10px;
+    border:1px solid var(--line);
+    background:var(--tape-2);
+    font-family:'Space Mono', monospace;
+    font-size:15px;
+    color:var(--ink);
+    border-radius:1px;
+  }
+  .field input:focus{
+    outline:2px solid var(--green);
+    outline-offset:1px;
+    background:var(--white);
+  }
+
+  .measure-btn{
+    width:100%;
+    margin-top:30px;
+    padding:16px;
+    background:var(--red);
+    color:var(--white);
+    border:none;
+    font-family:'Space Mono', monospace;
+    font-size:15px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .measure-btn:hover{ background:#a83a26; }
+  .measure-btn:disabled{ background:var(--ink-soft); cursor:progress; }
+
+  .error{
+    color:var(--red);
+    font-size:13px;
+    margin-top:12px;
+    font-family:'Space Mono', monospace;
+    display:none;
+  }
+
+  /* ---------- Result ---------- */
+  .result{ display:none; }
+  .result.show{ display:block; }
+  .result-label{
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .result-number{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:64px;
+    color:var(--green);
+    line-height:1;
+    margin-bottom:22px;
+  }
+  .result-number span{ font-size:28px; color:var(--ink-soft); font-weight:400; }
+
+  .tape-scale{
+    position:relative;
+    height:54px;
+    border-top:2px solid var(--ink);
+    border-bottom:2px solid var(--ink);
+    background:var(--tape-2);
+    overflow:hidden;
+  }
+  .tape-scale .ticks{
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 6.66%);
+    opacity:.35;
+  }
+  .tape-scale .fill{
+    position:absolute; top:0; bottom:0; left:0;
+    width:0%;
+    background:linear-gradient(90deg, rgba(53,81,63,.18), rgba(53,81,63,.32));
+    transition:width .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .tape-scale .marker{
+    position:absolute; top:0; bottom:0;
+    width:3px;
+    background:var(--red);
+    left:0%;
+    transition:left .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .tape-scale .marker::after{
+    content:attr(data-val);
+    position:absolute;
+    top:-26px; left:50%;
+    transform:translateX(-50%);
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    color:var(--red);
+    white-space:nowrap;
+  }
+  .scale-labels{
+    display:flex; justify-content:space-between;
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+
+  footer{
+    text-align:center;
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    padding:0 24px 48px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="eyebrow">only a tape measure &amp; a scale</div>
+    <h1>Know your <em>number</em>,<br>not just your weight.</h1>
+    <p class="sub">Body fat percentage, estimated from body circumference measurements using a
+      regression model — the same idea researchers have used for decades, minus the
+      underwater weighing tank.</p>
+  </div>
+
+  <div class="ruler"><div class="ruler-track"></div></div>
+
+  <div class="wrap">
+    <form class="card" id="bf-form">
+      <p class="section-label">01 — Basics</p>
+      <div class="sex-toggle">
+        <button type="button" class="active" data-sex="M">MALE</button>
+        <button type="button" data-sex="F">FEMALE</button>
+      </div>
+      <div class="grid">
+        <div class="field"><label>Age <span class="unit">years</span></label><input type="number" step="1" name="age" required></div>
+        <div class="field"><label>Weight <span class="unit">kg</span></label><input type="number" step="0.1" name="weight" required></div>
+        <div class="field"><label>Height <span class="unit">m</span></label><input type="number" step="0.01" name="height" required></div>
+      </div>
+
+      <p class="section-label" style="margin-top:30px;">02 — Circumferences (cm)</p>
+      <div class="grid">
+        <div class="field"><label>Neck</label><input type="number" step="0.1" name="neck" required></div>
+        <div class="field"><label>Chest</label><input type="number" step="0.1" name="chest" required></div>
+        <div class="field"><label>Abdomen</label><input type="number" step="0.1" name="abdomen" required></div>
+        <div class="field"><label>Hip</label><input type="number" step="0.1" name="hip" required></div>
+        <div class="field"><label>Thigh</label><input type="number" step="0.1" name="thigh" required></div>
+        <div class="field"><label>Knee</label><input type="number" step="0.1" name="knee" required></div>
+        <div class="field"><label>Ankle</label><input type="number" step="0.1" name="ankle" required></div>
+        <div class="field"><label>Biceps</label><input type="number" step="0.1" name="biceps" required></div>
+        <div class="field"><label>Forearm</label><input type="number" step="0.1" name="forearm" required></div>
+        <div class="field"><label>Wrist</label><input type="number" step="0.1" name="wrist" required></div>
+      </div>
+
+      <button class="measure-btn" type="submit" id="submit-btn">Take the measurement</button>
+      <p class="error" id="error-msg"></p>
+    </form>
+
+    <div class="card result" id="result-card">
+      <p class="result-label">Estimated body fat</p>
+      <div class="result-number" id="result-number">0<span>%</span></div>
+
+      <div class="tape-scale">
+        <div class="ticks"></div>
+        <div class="fill" id="tape-fill"></div>
+        <div class="marker" id="tape-marker" data-val=""></div>
+      </div>
+      <div class="scale-labels"><span>0%</span><span>15%</span><span>30%</span><span>45%+</span></div>
+    </div>
+  </div>
+
+  <footer>SOML Capstone — Ridge Regression on body circumference measurements</footer>
+
+<script>
+  let sex = 'M';
+  document.querySelectorAll('.sex-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sex-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      sex = btn.dataset.sex;
+    });
+  });
+
+  const form = document.getElementById('bf-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorMsg = document.getElementById('error-msg');
+  const resultCard = document.getElementById('result-card');
+  const resultNumber = document.getElementById('result-number');
+  const tapeFill = document.getElementById('tape-fill');
+  const tapeMarker = document.getElementById('tape-marker');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Measuring...';
+
+    const fd = new FormData(form);
+    const payload = { sex };
+    for (const [key, val] of fd.entries()) payload[key] = parseFloat(val);
+
+    try {
+      const res = await fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const detail = await res.json().catch(() => ({}));
+        throw new Error(detail.detail || 'Prediction failed — check your inputs.');
+      }
+      const data = await res.json();
+      const pct = data.body_fat_percent;
+
+      resultNumber.innerHTML = pct + '<span>%</span>';
+      const fillPct = Math.min(100, (pct / 45) * 100);
+      tapeFill.style.width = fillPct + '%';
+      tapeMarker.style.left = fillPct + '%';
+      tapeMarker.setAttribute('data-val', pct + '%');
+      resultCard.classList.add('show');
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+      errorMsg.textContent = err.message;
+      errorMsg.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Take the measurement';
+    }
+  });
+</script>
+</body>
+</html>
