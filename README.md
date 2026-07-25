@@ -123,7 +123,7 @@ one I'd cleaned two merged real-world datasets, caught data leakage in my own pi
 seven models honestly instead of picking whichever looked best, and shipped my first ever
 full-stack deployment — backend, frontend, and hosting, all built from scratch.
 
-This project is part of **Summer of ML (SoM-25)**, run by the **AI/ML wing of the Coding
+This project is part of **Summer of ML (SoM-26)**, run by the **AI/ML wing of the Coding
 Club**. I'm grateful to my seniors and mentors there for the guidance, the code reviews, and
 the patience — this is the first project I've built end-to-end on my own, and I wouldn't have
 gotten here without the six weeks before it.
