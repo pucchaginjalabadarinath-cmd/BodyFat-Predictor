@@ -76,8 +76,8 @@ the exact final values from the training run.)*
 ### 💻 Run It Locally
 
 ```bash
-git clone https://github.com/<your-username>/<your-repo>.git
-cd <your-repo>
+git clone https://github.com/<pucchaginjalabadarinath-cmd>/BodyFat-Predictor.git
+cd BodyFat-Predictor
 
 python -m venv venv
 venv\Scripts\activate        # Windows
