@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Body Fat Predictor — Just a Tape and a Scale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --tape:    #E7DCC3;
-    --tape-2:  #F3ECDA;
-    --ink:     #20261F;
-    --ink-soft:#5B6156;
-    --red:     #C1442D;
-    --green:   #35513F;
-    --line:    #C9BC9C;
-    --white:   #FBF9F2;
+    --tape:    #E6D8B8;
+    --tape-2:  #F5EEDA;
+    --ink:     #1E211C;
+    --ink-soft:#5C5A47;
+    --rust:    #A6402A;
+    --brass:   #A97A2E;
+    --pine:    #2F4A3C;
+    --line:    #C7B888;
+    --white:   #FCF8EC;
   }
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
@@ -23,9 +24,9 @@
     margin:0;
     background:var(--tape);
     color:var(--ink);
-    font-family:'Inter', sans-serif;
+    font-family:'IBM Plex Sans', sans-serif;
     background-image:
-      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(32,38,31,0.06) 39px, rgba(32,38,31,0.06) 40px);
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(30,33,28,0.05) 39px, rgba(30,33,28,0.05) 40px);
   }
 
   /* ---------- Hero ---------- */
@@ -36,24 +37,24 @@
     text-align:center;
   }
   .eyebrow{
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:13px;
     letter-spacing:.12em;
     text-transform:uppercase;
-    color:var(--red);
+    color:var(--rust);
     margin-bottom:18px;
   }
   h1{
-    font-family:'Fraunces', serif;
+    font-family:'Bitter', serif;
     font-weight:700;
-    font-size:clamp(38px, 6vw, 62px);
-    line-height:1.05;
+    font-size:clamp(36px, 5.6vw, 58px);
+    line-height:1.08;
     margin:0 0 18px;
     letter-spacing:-0.01em;
   }
   h1 em{
     font-style:italic;
-    color:var(--green);
+    color:var(--pine);
   }
   .sub{
     font-size:17px;
@@ -63,11 +64,11 @@
     line-height:1.55;
   }
 
-  /* ruler divider */
+  /* ---------- Full-bleed ruler divider ---------- */
   .ruler{
-    max-width:760px;
-    margin:40px auto 0;
-    padding:0 24px;
+    width:100%;
+    margin:40px 0 0;
+    padding:0;
   }
   .ruler-track{
     position:relative;
@@ -80,8 +81,20 @@
     content:"";
     position:absolute; inset:0;
     background-image: repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 20px);
-    opacity:.5;
+    opacity:.45;
   }
+  .rivet{
+    position:absolute;
+    top:50%;
+    width:12px; height:12px;
+    border-radius:50%;
+    background:var(--brass);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.35), 0 0 0 2px var(--tape-2);
+    transform:translateY(-50%);
+    z-index:2;
+  }
+  .rivet.left{ left:18px; }
+  .rivet.right{ right:18px; }
 
   /* ---------- Card ---------- */
   .wrap{ max-width:760px; margin:0 auto; padding:32px 24px 100px; }
@@ -89,17 +102,17 @@
     background:var(--white);
     border:1px solid var(--line);
     border-radius:2px;
-    box-shadow: 0 1px 0 var(--line), 0 18px 40px -28px rgba(32,38,31,.5);
+    box-shadow: 0 1px 0 var(--line), 0 18px 40px -28px rgba(30,33,28,.5);
     padding:36px 32px;
   }
   .card + .card{ margin-top:22px; }
 
   .section-label{
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:12px;
     letter-spacing:.1em;
     text-transform:uppercase;
-    color:var(--green);
+    color:var(--pine);
     margin:0 0 18px;
     display:flex;
     align-items:center;
@@ -118,7 +131,7 @@
     padding:14px;
     border:1px solid var(--line);
     background:var(--tape-2);
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:14px;
     letter-spacing:.05em;
     color:var(--ink-soft);
@@ -126,8 +139,8 @@
     transition:.15s;
   }
   .sex-toggle button.active{
-    background:var(--green);
-    border-color:var(--green);
+    background:var(--pine);
+    border-color:var(--pine);
     color:var(--white);
   }
 
@@ -145,48 +158,57 @@
     margin-bottom:6px;
   }
   .field label .unit{
-    font-family:'Space Mono', monospace;
-    color:var(--red);
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--rust);
     font-size:11px;
+  }
+  .field label .range{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--ink-soft);
+    opacity:.65;
+    font-size:10px;
   }
   .field input{
     width:100%;
     padding:11px 10px;
     border:1px solid var(--line);
     background:var(--tape-2);
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:15px;
     color:var(--ink);
     border-radius:1px;
   }
   .field input:focus{
-    outline:2px solid var(--green);
+    outline:2px solid var(--pine);
     outline-offset:1px;
     background:var(--white);
+  }
+  .field input:invalid:not(:placeholder-shown){
+    border-color:var(--rust);
   }
 
   .measure-btn{
     width:100%;
     margin-top:30px;
     padding:16px;
-    background:var(--red);
+    background:var(--rust);
     color:var(--white);
     border:none;
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:15px;
     letter-spacing:.08em;
     text-transform:uppercase;
     cursor:pointer;
     transition:.15s;
   }
-  .measure-btn:hover{ background:#a83a26; }
+  .measure-btn:hover{ background:#8a3521; }
   .measure-btn:disabled{ background:var(--ink-soft); cursor:progress; }
 
   .error{
-    color:var(--red);
+    color:var(--rust);
     font-size:13px;
     margin-top:12px;
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     display:none;
   }
 
@@ -194,7 +216,7 @@
   .result{ display:none; }
   .result.show{ display:block; }
   .result-label{
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:12px;
     letter-spacing:.1em;
     text-transform:uppercase;
@@ -202,10 +224,10 @@
     margin-bottom:6px;
   }
   .result-number{
-    font-family:'Fraunces', serif;
+    font-family:'Bitter', serif;
     font-weight:700;
     font-size:64px;
-    color:var(--green);
+    color:var(--pine);
     line-height:1;
     margin-bottom:22px;
   }
@@ -222,18 +244,18 @@
   .tape-scale .ticks{
     position:absolute; inset:0;
     background-image: repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 6.66%);
-    opacity:.35;
+    opacity:.32;
   }
   .tape-scale .fill{
     position:absolute; top:0; bottom:0; left:0;
     width:0%;
-    background:linear-gradient(90deg, rgba(53,81,63,.18), rgba(53,81,63,.32));
+    background:linear-gradient(90deg, rgba(47,74,60,.18), rgba(47,74,60,.34));
     transition:width .9s cubic-bezier(.2,.8,.2,1);
   }
   .tape-scale .marker{
     position:absolute; top:0; bottom:0;
     width:3px;
-    background:var(--red);
+    background:var(--brass);
     left:0%;
     transition:left .9s cubic-bezier(.2,.8,.2,1);
   }
@@ -242,14 +264,14 @@
     position:absolute;
     top:-26px; left:50%;
     transform:translateX(-50%);
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:11px;
-    color:var(--red);
+    color:var(--brass);
     white-space:nowrap;
   }
   .scale-labels{
     display:flex; justify-content:space-between;
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:11px;
     color:var(--ink-soft);
     margin-top:6px;
@@ -257,7 +279,7 @@
 
   footer{
     text-align:center;
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:11px;
     color:var(--ink-soft);
     padding:0 24px 48px;
@@ -269,12 +291,16 @@
   <div class="hero">
     <div class="eyebrow">only a tape measure &amp; a scale</div>
     <h1>Know your <em>number</em>,<br>not just your weight.</h1>
-    <p class="sub">Body fat percentage, estimated from body circumference measurements using a
-      regression model — the same idea researchers have used for decades, minus the
-      underwater weighing tank.</p>
+    <p class="sub">Every measurement below is one you can take yourself — tape, scale,
+      five minutes. Estimates are accurate to within about 3.6 percentage points.</p>
   </div>
 
-  <div class="ruler"><div class="ruler-track"></div></div>
+  <div class="ruler">
+    <div class="ruler-track">
+      <span class="rivet left"></span>
+      <span class="rivet right"></span>
+    </div>
+  </div>
 
   <div class="wrap">
     <form class="card" id="bf-form">
@@ -284,23 +310,23 @@
         <button type="button" data-sex="F">FEMALE</button>
       </div>
       <div class="grid">
-        <div class="field"><label>Age <span class="unit">years</span></label><input type="number" step="1" name="age" required></div>
-        <div class="field"><label>Weight <span class="unit">kg</span></label><input type="number" step="0.1" name="weight" required></div>
-        <div class="field"><label>Height <span class="unit">m</span></label><input type="number" step="0.01" name="height" required></div>
+        <div class="field"><label>Age <span class="unit">years</span> <span class="range">(16–90)</span></label><input type="number" step="1" min="16" max="90" name="age" required></div>
+        <div class="field"><label>Weight <span class="unit">kg</span> <span class="range">(35–180)</span></label><input type="number" step="0.1" min="35" max="180" name="weight" required></div>
+        <div class="field"><label>Height <span class="unit">m</span> <span class="range">(1.4–2.1)</span></label><input type="number" step="0.01" min="1.4" max="2.1" name="height" required></div>
       </div>
 
       <p class="section-label" style="margin-top:30px;">02 — Circumferences (cm)</p>
       <div class="grid">
-        <div class="field"><label>Neck</label><input type="number" step="0.1" name="neck" required></div>
-        <div class="field"><label>Chest</label><input type="number" step="0.1" name="chest" required></div>
-        <div class="field"><label>Abdomen</label><input type="number" step="0.1" name="abdomen" required></div>
-        <div class="field"><label>Hip</label><input type="number" step="0.1" name="hip" required></div>
-        <div class="field"><label>Thigh</label><input type="number" step="0.1" name="thigh" required></div>
-        <div class="field"><label>Knee</label><input type="number" step="0.1" name="knee" required></div>
-        <div class="field"><label>Ankle</label><input type="number" step="0.1" name="ankle" required></div>
-        <div class="field"><label>Biceps</label><input type="number" step="0.1" name="biceps" required></div>
-        <div class="field"><label>Forearm</label><input type="number" step="0.1" name="forearm" required></div>
-        <div class="field"><label>Wrist</label><input type="number" step="0.1" name="wrist" required></div>
+        <div class="field"><label>Neck <span class="range">(25–55)</span></label><input type="number" step="0.1" min="25" max="55" name="neck" required></div>
+        <div class="field"><label>Chest <span class="range">(40–140)</span></label><input type="number" step="0.1" min="40" max="140" name="chest" required></div>
+        <div class="field"><label>Abdomen <span class="range">(55–150)</span></label><input type="number" step="0.1" min="55" max="150" name="abdomen" required></div>
+        <div class="field"><label>Hip <span class="range">(80–150)</span></label><input type="number" step="0.1" min="80" max="150" name="hip" required></div>
+        <div class="field"><label>Thigh <span class="range">(35–90)</span></label><input type="number" step="0.1" min="35" max="90" name="thigh" required></div>
+        <div class="field"><label>Knee <span class="range">(22–50)</span></label><input type="number" step="0.1" min="22" max="50" name="knee" required></div>
+        <div class="field"><label>Ankle <span class="range">(16–36)</span></label><input type="number" step="0.1" min="16" max="36" name="ankle" required></div>
+        <div class="field"><label>Biceps <span class="range">(18–48)</span></label><input type="number" step="0.1" min="18" max="48" name="biceps" required></div>
+        <div class="field"><label>Forearm <span class="range">(18–36)</span></label><input type="number" step="0.1" min="18" max="36" name="forearm" required></div>
+        <div class="field"><label>Wrist <span class="range">(12–23)</span></label><input type="number" step="0.1" min="12" max="23" name="wrist" required></div>
       </div>
 
       <button class="measure-btn" type="submit" id="submit-btn">Take the measurement</button>
@@ -343,6 +369,12 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorMsg.style.display = 'none';
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.textContent = 'Measuring...';
 
